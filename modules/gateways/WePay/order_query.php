@@ -37,7 +37,7 @@
 			echo "错误代码：".$orderQueryResult['err_code']."<br>";
 			echo "错误代码描述：".$orderQueryResult['err_code_des']."<br>";
 			wx_reply(false);
-			logTransaction($gatewayParams['name'], $orderQueryResult, $orderQueryResult['return_msg']);
+			//logTransaction($gatewayParams['name'], $orderQueryResult, $orderQueryResult['return_msg']);
 		}
 		else {
 /*
@@ -82,7 +82,7 @@
 				$transactionStatus = $success ? 'SUCCESS' : 'NOTPAY';
 				$invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
 				checkCbTransID($transactionId);
-				logTransaction($gatewayParams['name'], $orderQueryResult, $transactionStatus);
+				logTransaction($gatewayParams['name']."(Q)", $orderQueryResult, $transactionStatus);
 				
 				$paymentSuccess = false;
 				
@@ -113,7 +113,7 @@
 				
 				callback3DSecureRedirect($invoiceId, $paymentSuccess);
 			} else {
-				logTransaction($gatewayParams['name'], $orderQueryResult, $transactionStatus);
+				//logTransaction($gatewayParams['name'], $orderQueryResult, $transactionStatus);
 			}
 
 		}	

@@ -7,7 +7,6 @@
  * 
  * 这里举例使用log文件形式记录回调信息。
 */
-include_once("./log_.php");
 include_once("./lib/WxPayPubHelper.php");
 $gatewayModule = "WePay"; # Enter your gateway module name here replacing template
 $gatewayParams = getGatewayVariables($gatewayModule);
@@ -37,19 +36,16 @@ echo $returnXml;
 //==商户根据实际情况设置相应的处理流程，此处仅作举例=======
 
 //以log文件形式记录回调信息
-$log_ = new Log_();
-$log_name="./notify_url.log";//log文件路径
-$log_->log_result($log_name,"【接收到的notify通知】:\n".$xml."\n");
+
 if( $notify->checkSign() == TRUE ) {
 	if ($notify->data["return_code"] == "FAIL") {
 		//此处应该更新一下订单状态，商户自行增删操作
-		$log_->log_result($log_name,"【通信出错】:\n".$xml."\n");
+		logTransaction($gatewayParams['name']."(N)","[通信出错]:".$notify->data, "FAIL");
 	} elseif ($notify->data["result_code"] == "FAIL") {
 		//此处应该更新一下订单状态，商户自行增删操作
-		$log_->log_result($log_name,"【业务出错】:\n".$xml."\n");
+		logTransaction($gatewayParams['name']."(N)","[业务出错]:".$notify->data, "FAIL");
 	} else {
 		//此处应该更新一下订单状态，商户自行增删操作
-		$log_->log_result($log_name,"【支付成功】:\n".$xml."\n");
 		//商户自行增加处理流程,
 		//例如：更新订单状态
 		//例如：数据库操作
@@ -79,7 +75,7 @@ if( $notify->checkSign() == TRUE ) {
 		
 		$invoiceId = checkCbInvoiceID($invoiceId, $gatewayParams['name']);
 		checkCbTransID($transactionId);
-		logTransaction($gatewayParams['name'], $notify->data, $transactionStatus);
+		logTransaction($gatewayParams['name']."(N)", $notify->data, $transactionStatus);
 		
 		$paymentSuccess = false;
 		

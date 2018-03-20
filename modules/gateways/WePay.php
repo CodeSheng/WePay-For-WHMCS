@@ -1,14 +1,11 @@
 <?php
 // NeWorld Manager 开始
 
-// 引入文件
-require_once  ROOTDIR . '/modules/addons/NeWorld/library/class/NeWorld.Common.Class.php';
-
 // NeWorld Manager 结束
 
 function WePay_MetaData() {
     return [
-        'DisplayName' => '微信支付(NeWorld)',
+        'DisplayName' => '微信支付',
         'APIVersion' => '1.6',
         'DisableLocalCredtCardInput' => true,
         'TokenisedStorage' => false,
@@ -20,7 +17,7 @@ function WePay_config() {
     $configarray = [
     	"FriendlyName" => [
     		"Type" => "System",
-    		"Value"=>"微信支付(NeWorld)"
+    		"Value"=>"微信支付"
     	],
 		"APPID" => [
 			"FriendlyName" => "公众号AppID",
@@ -121,8 +118,7 @@ function WePay_link($params) {
 	$result['returnurl'] 	= $params['returnurl'];
 	$result['checkTime'] 	= checkTime * 1000;
 	
-	$ext = new NeWorld\Extended;
-	$code = $ext->getSmarty([
+	$code = WePay_getSmarty([
 	    'dir' 	=> __DIR__ . '/WePay/',
         'file' 	=> 'WePay',
         'vars' 	=> $result,
@@ -133,6 +129,43 @@ function WePay_link($params) {
 	} else {
 		return '<img style="width: 200px" src="'.$systemurl.'/modules/gateways/WePay/WePay.png" alt="微信支付" />';
 	}
+}
+
+function WePay_getSmarty(array $page)
+{
+    if( isset($page["file"]) ) 
+    {
+        $smarty = new \Smarty();
+        if( isset($page["vars"]) ) 
+        {
+            if( is_array($page["vars"]) ) 
+            {
+                $smarty->assign($page["vars"]);
+            }
+            else
+            {
+                throw new \Exception("已定义的传值字段并非数组");
+            }
+
+        }
+
+        isset($page["dir"]);
+        (isset($page["dir"]) ? ($dir = $page["dir"]) : ($dir = $page["dir"]));
+        
+        if( isset($page["cache"]) && $page["cache"] == true ) 
+        {
+            $smarty->caching = true;
+        }
+        else
+        {
+            $smarty->caching = false;
+        }
+
+        $smarty->compile_dir = $GLOBALS["templates_compiledir"];
+        return (string) $smarty->fetch($dir . $page["file"] . ".tpl");
+    }
+
+    throw new \Exception("未定义模板文件");
 }
 
 function WePay_refund($params) {
